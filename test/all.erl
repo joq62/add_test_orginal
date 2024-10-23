@@ -23,7 +23,7 @@
 -define(TarFile,"add_test.tar.gz").
 -define(TarDir,"tar_dir").
 -define(ExecDir,"exec_dir").
--define(GitUrl,"https://github.com/joq62/add_test_x86.git ").
+-define(GitUrl,"https://github.com/joq62/add_test_arm.git ").
 
 -define(Foreground,"./"++?ApplicationDir++"bin/"++?Application++" "++"foreground").
 -define(Daemon,"./"++?ApplicationDir++"/bin/"++?Application++" "++"daemon").
@@ -62,7 +62,7 @@ test1()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
     %% Change
     42=rpc:call(get_node(?NodeName),add_test,add,[20,22],5000),
-  {ok,"/home/joq62/erlang/new_setup/x86_applications/test_area/add_test/add_test_container"}=rpc:call(get_node(?NodeName),add_test,get_cwd,[],5000),    
+  {ok,"/home/ubuntu/arm_applications/test_area/add_test_orginal/add_test_container"}=rpc:call(get_node(?NodeName),add_test,get_cwd,[],5000),    
     ok.
 %% --------------------------------------------------------------------
 %% Function: available_hosts()
@@ -74,12 +74,12 @@ setup()->
    
     file:del_dir_r(?ApplicationDir),
     file:make_dir(?ApplicationDir),
-    os:cmd("git clone "++" "++?GitUrl++" "++?ApplicationDir),
-
+    _Clone=os:cmd("git clone "++" "++?GitUrl++" "++?ApplicationDir),
+    %io:format("Clone ~p~n",[Clone]),
     %% Unpack tar file
     TarFileFullPath=filename:join([?ApplicationDir,?TarDir,?TarFile]),
-    os:cmd("tar -zxvf "++TarFileFullPath++" "++"-C"++" "++?ApplicationDir),
-  
+    _Tar=os:cmd("tar -zxvf "++TarFileFullPath++" "++"-C"++" "++?ApplicationDir),
+    %io:format("Tar ~p~n",[Tar]),
     rpc:call(get_node(?NodeName),init,stop,[],5000),
     true=check_node_stopped(get_node(?NodeName)),
     io:format("~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
@@ -87,8 +87,11 @@ setup()->
     []=os:cmd(?Daemon),
     io:format("~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
     true=check_node_started(get_node(?NodeName)),
-    
+    io:format("Node started ~p~n",[{get_node(?NodeName),?MODULE,?LINE}]),
     %% Check applications are correct started
+
+    timer:sleep(2000),
+
     pong=rpc:call(get_node(?NodeName),log,ping,[],5000),
     pong=rpc:call(get_node(?NodeName),rd,ping,[],5000),
 
@@ -102,6 +105,9 @@ setup()->
 %% 
 %% @end
 %%--------------------------------------------------------------------
+
+
+
 
 check_node_started(Node)->
     check_node_started(Node,?NumCheck,?CheckDelay,false).

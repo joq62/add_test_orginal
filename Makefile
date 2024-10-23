@@ -10,14 +10,6 @@ all:
 	rm -rf ebin;
 	rm -rf rebar.lock;
 	#INFO: Compile application
-	rm -rf common_include;
-	cp -r ~/erlang/common_include .
-	rebar3 release;
-	rebar3 as prod tar;
-	rm -rf tar_dir;
-	mkdir tar_dir;
-	cp _build/prod/rel/add_test/*.tar.gz tar_dir/add_test.tar.gz;
-	rm -rf _build;
 	git status
 	echo Ok there you go!
 	#INFO: no_ebin_commit ENDED SUCCESSFUL
